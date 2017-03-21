@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Lift +1</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="enter_routine">Enter a new routine</string>
+    <string name="delete_routine">Would you like to remove the <b>%s</b> routine?</string>
+    <string name="no_routines">Add a routine!</string>
+
+    <string name="title_activity_exercise">Exercise Activity</string>
+    <string name="enter_exercise">Enter a new exercise</string>
+    <string name="delete_exercise">Would you like to remove the <b>%s</b> exercise?</string>
+    <string name="no_exercises">Add an exercise!</string>
+
+    <string name="title_activity_set">SetActivity</string>
+    <string name="enter_set">Enter a new exercise</string>
+    <string name="delete_set">Would you like to remove this set?</string>
+
+</resources>
