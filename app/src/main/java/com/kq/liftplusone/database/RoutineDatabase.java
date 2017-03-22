@@ -38,7 +38,6 @@ public class RoutineDatabase extends SQLiteOpenHelper implements Database<Routin
         onCreate(db);
     }
 
-    @Override
     public ArrayList<Routine> getAll() {
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<Routine> routineList = new ArrayList<>();
@@ -52,28 +51,28 @@ public class RoutineDatabase extends SQLiteOpenHelper implements Database<Routin
             } while (cursor.moveToNext());
         }
         db.close();
-        Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, routineList.toString());
         return routineList;
     }
 
-    @Override
     public Routine get(String name) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_NAME + " = '" + name + "'";
 
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + KEY_NAME + " = ?",
+                new String[]{name});
+
         if (cursor != null)
             cursor.moveToFirst();
 
         Routine routine = gson.fromJson(cursor.getString(1), Routine.class);
-        Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "GET -> " + cursor.getString(1));
+        Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "GET -> " + routine.getRoutineName());
 
         db.close();
 
         return routine;
     }
 
-    @Override
     public void add(Routine routine) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -82,29 +81,33 @@ public class RoutineDatabase extends SQLiteOpenHelper implements Database<Routin
         values.put(KEY_NAME, routine.getRoutineName());
         values.put(KEY_OBJECT, gsonString);
 
-        long i = db.insert(TABLE_NAME, null, values);
+        db.insert(TABLE_NAME, null, values);
         db.close();
 
-        Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "ADD -> " + gsonString + " at " + i);
+        Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "ADD -> " + routine.getRoutineName());
     }
 
-    @Override
     public void update(Routine routine) {
         SQLiteDatabase db = getWritableDatabase();
-        String updateQuery = "UPDATE " + TABLE_NAME +
-                " SET " + KEY_OBJECT + " = '" + gson.toJson(routine) +
-                "' WHERE " + KEY_NAME + " = '" + routine.getRoutineName() + "'";
-        db.execSQL(updateQuery);
+
+        String gsonString = gson.toJson(routine);
+        ContentValues values = new ContentValues();
+        values.put(KEY_OBJECT, gsonString);
+
+        db.update(TABLE_NAME, // table
+                values, // content
+                KEY_NAME + " = ?", // where clause
+                new String[]{routine.getRoutineName()}); // where parameters
         db.close();
 
         Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "UPDATE -> " + routine.getRoutineName());
     }
 
-    @Override
     public void remove(String name) {
         SQLiteDatabase db = getWritableDatabase();
-        String deleteQuery = "DELETE FROM " + TABLE_NAME + " WHERE " + KEY_NAME + " = '" + name + "'";
-        db.execSQL(deleteQuery);
+        db.delete(TABLE_NAME,
+                KEY_NAME + " = ?", // where clause
+                new String[]{name});
         db.close();
 
         Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "DELETE -> " + name);
@@ -115,5 +118,4 @@ public class RoutineDatabase extends SQLiteOpenHelper implements Database<Routin
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
-
 }
