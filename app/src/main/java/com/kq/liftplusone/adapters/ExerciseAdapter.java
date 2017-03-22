@@ -22,6 +22,9 @@ import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 import static com.kq.liftplusone.helpers.Constants.DATABASE_NAME;
 import static com.kq.liftplusone.helpers.Constants.EXERCISE_ADAPTER_LOG_TAG;
 
@@ -34,14 +37,12 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
     private ArrayList<Exercise> mExercises;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-
-        private TextView mExerciseName;
-        private TextView mSetDescription;
+        @Bind(R.id.upper_text) TextView mExerciseName;
+        @Bind(R.id.lower_text) TextView mSetDescription;
 
         public ViewHolder(View view) {
             super(view);
-            mExerciseName = (TextView) itemView.findViewById(R.id.left_text);
-            mSetDescription = (TextView) itemView.findViewById(R.id.right_text);
+            ButterKnife.bind(this, view);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
 

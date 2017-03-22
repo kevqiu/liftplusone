@@ -8,10 +8,14 @@ import java.util.Set;
 
 public class Exercise {
     private String mExercise;
-    private ArrayList<ExerciseSet> mSets ;
+    private MuscleGroup mMuscleGroup;
+    private Equipment mEquipment;
+    private ArrayList<ExerciseSet> mSets;
 
-    public Exercise(String exercise) {
+    public Exercise(String exercise, MuscleGroup muscleGroup, Equipment equipment) {
         mExercise = exercise;
+        mMuscleGroup = muscleGroup;
+        mEquipment = equipment;
         mSets = new ArrayList<>();
         for (int i = 0; i < 3; i++)
             mSets.add(new ExerciseSet(5,5));
@@ -23,6 +27,14 @@ public class Exercise {
 
     public ArrayList<ExerciseSet> getSets() {
         return mSets;
+    }
+
+    public MuscleGroup getMuscleGroup() {
+        return mMuscleGroup;
+    }
+
+    public Equipment getEquipment() {
+        return mEquipment;
     }
 
     public void removeSet(ExerciseSet s) {
@@ -44,5 +56,4 @@ public class Exercise {
         }
         return sb.toString();
     }
-
 }

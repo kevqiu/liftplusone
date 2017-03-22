@@ -26,7 +26,7 @@
                 android:background="@drawable/recycler_bar"></View>
 
             <TextView
-                android:id="@+id/left_text"
+                android:id="@+id/upper_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="default1"
@@ -36,12 +36,12 @@
                 android:layout_marginStart="10dp" />
 
             <TextView
-                android:id="@+id/right_text"
+                android:id="@+id/lower_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="default2"
                 android:layout_alignParentBottom="true"
-                android:layout_alignStart="@+id/left_text" />
+                android:layout_alignStart="@+id/upper_text" />
 
         </RelativeLayout>
 

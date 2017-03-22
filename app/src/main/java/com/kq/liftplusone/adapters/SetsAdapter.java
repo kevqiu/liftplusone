@@ -18,6 +18,9 @@ import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 import static com.kq.liftplusone.helpers.Constants.DATABASE_NAME;
 import static com.kq.liftplusone.helpers.Constants.SET_ADAPTER_LOG_TAG;
 
@@ -30,14 +33,12 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
     private RoutineDatabase mDbHelper;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-
-        private TextView mSetText;
-        private TextView mWeight;
+        @Bind(R.id.left_text) TextView mSetText;
+        @Bind(R.id.right_text) TextView mWeight;
 
         public ViewHolder(View view) {
             super(view);
-            mSetText = (TextView) itemView.findViewById(R.id.left_text);
-            mWeight = (TextView) itemView.findViewById(R.id.right_text);
+            ButterKnife.bind(this, view);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
 

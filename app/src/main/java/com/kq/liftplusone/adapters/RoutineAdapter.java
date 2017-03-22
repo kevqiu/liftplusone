@@ -22,23 +22,22 @@ import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
 
+import butterknife.*;
+
 import static com.kq.liftplusone.helpers.Constants.*;
 
 public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHolder>  {
-
     private Context mContext;
     private ArrayList<Routine> mRoutines;
     private RoutineDatabase mDbHelper;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-
-        private TextView mRoutineName;
-        private TextView mExerciseList;
+        @Bind(R.id.upper_text) TextView mRoutineName;
+        @Bind(R.id.lower_text) TextView mExerciseList;
 
         public ViewHolder(View view) {
             super(view);
-            mRoutineName = (TextView) itemView.findViewById(R.id.left_text);
-            mExerciseList = (TextView) itemView.findViewById(R.id.right_text);
+            ButterKnife.bind(this, view);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
 
