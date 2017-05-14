@@ -25,7 +25,10 @@
         <activity
             android:name=".activities.SetsActivity"
             android:label="@string/title_activity_set"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings" />
     </application>
 
 </manifest>

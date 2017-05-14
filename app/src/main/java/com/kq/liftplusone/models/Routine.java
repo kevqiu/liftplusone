@@ -3,7 +3,6 @@ package com.kq.liftplusone.models;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 

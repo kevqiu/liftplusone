@@ -4,5 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_height">80dp</dimen>
-    <dimen name="card_height_small">50dp</dimen>
+    <dimen name="card_height_small">60dp</dimen>
 </resources>

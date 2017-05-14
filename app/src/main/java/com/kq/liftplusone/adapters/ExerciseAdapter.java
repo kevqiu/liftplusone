@@ -1,9 +1,9 @@
 package com.kq.liftplusone.adapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +18,7 @@ import com.kq.liftplusone.R;
 import com.kq.liftplusone.activities.SetsActivity;
 import com.kq.liftplusone.database.RoutineDatabase;
 import com.kq.liftplusone.models.Exercise;
+import com.kq.liftplusone.models.Measurement;
 import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
@@ -25,13 +26,13 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static com.kq.liftplusone.helpers.Constants.DATABASE_NAME;
-import static com.kq.liftplusone.helpers.Constants.EXERCISE_ADAPTER_LOG_TAG;
+import static com.kq.liftplusone.helpers.Constants.*;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHolder>  {
 
     private Context mContext;
     private RoutineDatabase mDbHelper;
+    private SharedPreferences sharedPrefs;
 
     private Routine mRoutine;
     private ArrayList<Exercise> mExercises;
@@ -101,7 +102,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View exerciseView = inflater.inflate(R.layout.recycler_item, parent, false);
+        View exerciseView = inflater.inflate(R.layout.activity_recycler_item, parent, false);
 
         // Return a new holder instance
         return new ViewHolder(exerciseView);
@@ -117,9 +118,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         TextView exerciseName = viewHolder.mExerciseName;
         exerciseName.setText(exercise.getExerciseName());
 
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        Measurement measurement = sharedPrefs.getString(PREF_MEASUREMENT_KEY, "lb").equals("lb") ? Measurement.Pound : Measurement.Kilogram;
         TextView exerciseDescription = viewHolder.mSetDescription;
-        exerciseDescription.setText(exercise.setsAsString());
-
+        exerciseDescription.setText(exercise.setsAsString(measurement));
     }
 
     // Return the size of your dataset (invoked by the layout manager)

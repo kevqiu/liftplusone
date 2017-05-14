@@ -20,7 +20,11 @@ public class AnimationBaseActivity extends AppCompatActivity {
     @Override
     public void startActivity(Intent intent) {
         super.startActivity(intent);
-        overridePendingTransitionEnter();
+
+        // do not set animation for settings activity
+        if(!intent.getComponent().getClassName().contains("SettingsActivity")) {
+            overridePendingTransitionEnter();
+        }
     }
 
     @Override
@@ -37,9 +41,9 @@ public class AnimationBaseActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

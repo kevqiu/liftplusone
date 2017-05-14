@@ -3,6 +3,8 @@ package com.kq.liftplusone.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import com.kq.liftplusone.R;
 import com.kq.liftplusone.database.RoutineDatabase;
 import com.kq.liftplusone.models.Exercise;
 import com.kq.liftplusone.models.ExerciseSet;
+import com.kq.liftplusone.models.Measurement;
 import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
@@ -28,9 +31,11 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
 
     private Context mContext;
     private Routine mRoutine;
+    private RoutineDatabase mDbHelper;
+    private SharedPreferences sharedPrefs;
+
     private Exercise mExercise;
     private ArrayList<ExerciseSet> mSets;
-    private RoutineDatabase mDbHelper;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         @Bind(R.id.left_text) TextView mSetText;
@@ -63,7 +68,7 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
                         mExercise.removeSet(set);
                         mRoutine.putExercise(mExercise);
                         mDbHelper.update(mRoutine);
-                        updateData(mDbHelper.get(mRoutine.getRoutineName()).getExercise(mExercise.getExerciseName()).getSets());
+                        updateData(mDbHelper.get(mRoutine.getRoutineName()).getExercise(mExercise.getExerciseName()));
                         notifyDataSetChanged();
                     }
                 })
@@ -109,8 +114,10 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
         int setNumber = position + 1;
         setName.setText("Set " + setNumber);
 
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        Measurement measurement = sharedPrefs.getString("measurement", "lb").equals("lb") ? Measurement.Pound : Measurement.Kilogram;
         TextView setWeight = viewHolder.mWeight;
-        setWeight.setText(set.getReps() + " reps @ " + set.getWeight());
+        setWeight.setText(set.setAsString(measurement));
 
     }
 
@@ -120,7 +127,8 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
         return mSets.size();
     }
 
-    public void updateData(ArrayList<ExerciseSet> list){
-        mSets = list;
+    public void updateData(Exercise ex){
+        mExercise = ex;
+        mSets = ex.getSets();
     }
 }

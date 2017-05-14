@@ -6,11 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -18,13 +21,18 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.kq.liftplusone.R;
 import com.kq.liftplusone.adapters.ExerciseAdapter;
+import com.kq.liftplusone.adapters.ExerciseDialogSetsAdapter;
 import com.kq.liftplusone.database.RoutineDatabase;
+import com.kq.liftplusone.helpers.EquipmentHelper;
+import com.kq.liftplusone.models.Equipment;
 import com.kq.liftplusone.models.Exercise;
 import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
 
-import butterknife.*;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.kq.liftplusone.helpers.Constants.DATABASE_NAME;
 import static com.kq.liftplusone.helpers.Constants.EXERCISE_ACTIVITY_LOG_TAG;
@@ -82,9 +90,13 @@ public class ExerciseActivity extends AnimationBaseActivity {
         super.onResume();
     }
 
+    Equipment equipment = Equipment.Barbell;
     @OnClick(R.id.fab)
     public void addExercise(View view) {
-        MaterialDialog dialog = new MaterialDialog.Builder(view.getContext())
+        final ExerciseDialogSetsAdapter setsAdapter = new ExerciseDialogSetsAdapter(this);
+
+        // construct Dialog
+        final MaterialDialog dialog = new MaterialDialog.Builder(view.getContext())
             .title(R.string.enter_exercise)
             .positiveText(android.R.string.ok)
             .negativeText(android.R.string.cancel)
@@ -92,14 +104,12 @@ public class ExerciseActivity extends AnimationBaseActivity {
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-//                    String input = dialog.getInputEditText().getText().toString();
-//                    if(!input.isEmpty() && input != null) {
-//                        Exercise exercise = new Exercise(input);
-//                        mRoutine.putExercise(exercise);
-//                        mRoutineDb.update(mRoutine);
-//                        insertOnAdapter(mExerciseAdapter.getItemCount());
-//                        updateMessage();
-//                    }
+                    String input = ((EditText) dialog.findViewById(R.id.routine_name)).getText().toString();
+                    Exercise exercise = new Exercise(input, equipment, setsAdapter.getSets());
+                    mRoutine.putExercise(exercise);
+                    mRoutineDb.update(mRoutine);
+                    insertOnAdapter(mExerciseAdapter.getItemCount());
+                    updateMessage();
                 }
             })
             .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -107,26 +117,61 @@ public class ExerciseActivity extends AnimationBaseActivity {
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                     dialog.dismiss();
                 }
-            }).build();
+            })
+            .build();
 
-            final Spinner equipmentSpinner = (Spinner) dialog.findViewById(R.id.equipment_spinner);
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        // disabled by default, seek validation first
+        dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+
+        // Validate exercise name
+        ((TextView) dialog.getCustomView().findViewById(R.id.routine_name)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                dialog.getActionButton(DialogAction.POSITIVE).setEnabled(count > 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        final Spinner equipmentSpinner = (Spinner) dialog.findViewById(R.id.equipment_spinner);
+        final RecyclerView setRecyclerView = (RecyclerView) dialog.findViewById(R.id.exercise_dialog_set_recycler_view);
+        final Button addSetButton = (Button) dialog.findViewById(R.id.add_button);
+
+        ArrayAdapter<CharSequence> equipmentAdapter = ArrayAdapter.createFromResource(this,
                     R.array.equipment_array, android.R.layout.simple_spinner_item);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            equipmentSpinner.setAdapter(adapter);
-            equipmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        equipmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        equipmentSpinner.setAdapter(equipmentAdapter);
+        equipmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> arg0, View v, int position, long id)
             {
-                public void onItemSelected(AdapterView<?> arg0, View v, int position, long id)
-                {
-                    Log.d(EXERCISE_ACTIVITY_LOG_TAG, equipmentSpinner.getItemAtPosition(position).toString());
-                }
+                equipment = EquipmentHelper.StringToEquipment(equipmentSpinner.getItemAtPosition(position).toString());
+            }
 
-                public void onNothingSelected(AdapterView<?> arg0)
-                {
-                    Log.d(EXERCISE_ACTIVITY_LOG_TAG, "nothing selected");
-                }
-            });
-            dialog.show();
+            public void onNothingSelected(AdapterView<?> arg0)
+            {
+                Log.d(EXERCISE_ACTIVITY_LOG_TAG, "nothing selected");
+            }
+        });
+
+        // attach adapter to Sets collection
+        setRecyclerView.setAdapter(setsAdapter);
+        setRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        
+        addSetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setsAdapter.addItem();
+            }
+        });
+
+        dialog.show();
     }
 
     private void insertOnAdapter(int pos) {

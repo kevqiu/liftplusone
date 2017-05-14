@@ -32,8 +32,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@+id/recycler_bar"
-                android:text="default1"
-                android:textSize="10dp" />
+                android:text="default1" />
 
             <TextView
                 android:id="@+id/right_text"
@@ -41,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="11dp"
                 android:text="default2"
-                android:textSize="10dp"
+                android:textSize="18sp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true" />
 

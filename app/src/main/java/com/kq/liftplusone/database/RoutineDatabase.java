@@ -113,7 +113,7 @@ public class RoutineDatabase extends SQLiteOpenHelper implements Database<Routin
         Log.d(ROUTINE_DATABASE_HELPER_LOG_TAG, "DELETE -> " + name);
     }
 
-    public void dropTable() {
+    public void resetDatabase() {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);

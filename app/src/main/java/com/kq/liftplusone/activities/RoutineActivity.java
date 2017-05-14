@@ -48,7 +48,7 @@ public class RoutineActivity extends AnimationBaseActivity {
 
         // initialize database
         mRoutineDb = new RoutineDatabase(getBaseContext(), DATABASE_NAME);
-        //mRoutineDb.dropTable();
+        //mRoutineDb.resetDatabase();
         mRoutines = mRoutineDb.getAll();
 
         // initialize adapter, populate in onResume

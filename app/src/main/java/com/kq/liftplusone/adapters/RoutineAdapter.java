@@ -1,12 +1,11 @@
 package com.kq.liftplusone.adapters;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +50,11 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
 
             Intent intent = new Intent(mContext, ExerciseActivity.class);
             intent.putExtra("Routine", routine.getRoutineName());
+//            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                    (Activity) mContext,
+//                    ((Activity) mContext).findViewById(R.id.fab),
+//                    v.getResources().getString(R.string.fab_transition));
+//            mContext.startActivity(intent, options.toBundle());
             mContext.startActivity(intent);
         }
 
@@ -93,7 +97,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View routineView = inflater.inflate(R.layout.recycler_item, parent, false);
+        View routineView = inflater.inflate(R.layout.activity_recycler_item, parent, false);
 
         // Return a new holder instance
         return new ViewHolder(routineView);

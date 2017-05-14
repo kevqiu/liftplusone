@@ -33,7 +33,9 @@
                 android:textSize="22dp"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/recycler_bar"
-                android:layout_marginStart="10dp" />
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:maxLines="1" />
 
             <TextView
                 android:id="@+id/lower_text"
@@ -41,7 +43,9 @@
                 android:layout_height="wrap_content"
                 android:text="default2"
                 android:layout_alignParentBottom="true"
-                android:layout_alignStart="@+id/upper_text" />
+                android:layout_alignStart="@+id/upper_text"
+                android:ellipsize="end"
+                android:maxLines="1" />
 
         </RelativeLayout>
 

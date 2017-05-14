@@ -1,10 +1,12 @@
 package com.kq.liftplusone.models;
 
+import com.kq.liftplusone.helpers.MeasurementHelper;
+
 public class ExerciseSet {
     private int mReps;
-    private int mWeight;
+    private float mWeight;
 
-    public ExerciseSet(int reps, int weight) {
+    public ExerciseSet(int reps, float weight) {
         mReps = reps;
         mWeight = weight;
     }
@@ -17,11 +19,23 @@ public class ExerciseSet {
         this.mReps = mReps;
     }
 
-    public int getWeight() {
+    public float getWeight() {
         return mWeight;
     }
 
-    public void setWeight(int mWeight) {
+    public void setWeight(float mWeight) {
         this.mWeight = mWeight;
     }
+
+    public String setAsString(Measurement m) {
+        String measurementString = MeasurementHelper.getString(m);
+        double ratio = MeasurementHelper.getRatio(m);
+        StringBuilder sb = new StringBuilder();
+
+        double weight = getWeight() * ratio;
+        sb.append(getReps() + " reps @ " + String.format("%.1f", weight) + measurementString);
+
+        return sb.toString();
+    }
+
 }
