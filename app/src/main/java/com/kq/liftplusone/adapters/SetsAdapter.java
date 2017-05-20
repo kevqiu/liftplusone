@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kq.liftplusone.R;
 import com.kq.liftplusone.database.RoutineDatabase;
 import com.kq.liftplusone.models.Exercise;
@@ -52,8 +58,81 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
 
         @Override
         public void onClick(View v) {
-            ExerciseSet set = mSets.get(getAdapterPosition()); // get Routine from list
-            Log.d(SET_ADAPTER_LOG_TAG, set.toString());
+            final ExerciseSet set = mSets.get(getAdapterPosition()); // get Routine from list
+            MaterialDialog dialog = new MaterialDialog.Builder(mContext)
+                    .title("Set " + (getAdapterPosition() + 1))
+                    .positiveText(android.R.string.ok)
+                    .negativeText(android.R.string.cancel)
+                    .customView(R.layout.exercise_dialog_set_recycler_item, true)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            String weightInput = ((EditText) dialog.getCustomView().findViewById(R.id.weight_edit_text)).getText().toString();
+                            String repsInput = ((EditText) dialog.getCustomView().findViewById(R.id.reps_edit_text)).getText().toString();
+                            if(!weightInput.isEmpty() && weightInput != null) {
+                                float newWeight = Float.parseFloat(weightInput);
+                                set.setWeight(newWeight);
+                                mExercise.putSet(set);
+                                mRoutine.putExercise(mExercise);
+                                mDbHelper.update(mRoutine);
+                                updateData(mExercise);
+                            }
+                            if(!repsInput.isEmpty() && repsInput != null) {
+                                int newReps = Integer.parseInt(repsInput);
+                                set.setReps(newReps);
+                                mExercise.putSet(set);
+                                mRoutine.putExercise(mExercise);
+                                mDbHelper.update(mRoutine);
+                                updateData(mExercise);
+                            }
+                        }
+                    })
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .build();
+
+            // hide remove button
+            dialog.getCustomView().findViewById(R.id.remove_button).setVisibility(View.INVISIBLE);
+
+            // attach text change listeners to inputs
+            EditText weightInput = (EditText) dialog.getCustomView().findViewById(R.id.weight_edit_text);
+            EditText repsInput = (EditText) dialog.getCustomView().findViewById(R.id.reps_edit_text);
+
+            weightInput.setText(Float.toString(set.getWeight()));
+            repsInput.setText(Integer.toString(set.getReps()));
+
+            weightInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if(count > 0 && s.charAt(s.length()-1) != '.') {
+                        set.setWeight(Float.parseFloat(s.toString()));
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+            repsInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if(count > 0) {
+                        set.setReps(Integer.parseInt(s.toString()));
+                    }
+                }
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+            dialog.show();
         }
 
         @Override
@@ -130,5 +209,6 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
     public void updateData(Exercise ex){
         mExercise = ex;
         mSets = ex.getSets();
+        notifyDataSetChanged();
     }
 }

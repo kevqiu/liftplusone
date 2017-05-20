@@ -7,12 +7,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.kq.liftplusone.R;
 import com.kq.liftplusone.adapters.SetsAdapter;
 import com.kq.liftplusone.database.RoutineDatabase;
@@ -30,6 +34,9 @@ public class SetsActivity extends AnimationBaseActivity {
     // bind views
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.set_recycler_view) RecyclerView mRecyclerView;
+    @Bind(R.id.fabMenu) FloatingActionMenu fabMenu;
+    @Bind(R.id.fabAddSet) FloatingActionButton fabAddSet;
+    @Bind(R.id.fabChangeWeight) FloatingActionButton fabChangeWeight;
 
     // content providers
     private SetsAdapter mSetsAdapter;
@@ -72,23 +79,39 @@ public class SetsActivity extends AnimationBaseActivity {
         // get RecyclerView and attach adapter
         mRecyclerView.setAdapter(mSetsAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+//        fabMenu.setOnFloatingActionsMenuUpdateListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(v.getContext(), "menu", Toast.LENGTH_SHORT).show();
+//                fabMenu.toggle();
+//            }
+//        });
     }
 
-    @OnClick(R.id.fab)
+    @OnClick(R.id.fabMenu)
+    public void asd(View view) {
+        Toast.makeText(this, "toggle menu", Toast.LENGTH_SHORT).show();
+        fabMenu.toggle(true);
+    }
+
+    @OnClick(R.id.fabAddSet)
     public void addSet(View view) {
         final ExerciseSet set = new ExerciseSet(0,0);
         MaterialDialog dialog = new MaterialDialog.Builder(view.getContext())
-                .title(R.string.enter_set)
+                .title(R.string.new_set)
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.cancel)
                 .customView(R.layout.exercise_dialog_set_recycler_item, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mExercise.addSet(set);
+                        updateActivity(); // update stale data
+                        mExercise.putSet(set);
                         mRoutine.putExercise(mExercise);
                         mRoutineDb.update(mRoutine);
-                        insertOnAdapter(mSetsAdapter.getItemCount());
+                        updateActivity();
+                        fabMenu.close(true);
                     }
                 })
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -129,12 +152,49 @@ public class SetsActivity extends AnimationBaseActivity {
                     set.setReps(Integer.parseInt(s.toString()));
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {}
         });
         dialog.show();
-        }
+    }
+
+    @OnClick(R.id.fabChangeWeight)
+    public void changeWeight(View view) {
+        MaterialDialog dialog = new MaterialDialog.Builder(view.getContext())
+                .title(R.string.change_weights)
+                .positiveText(android.R.string.ok)
+                .negativeText(android.R.string.cancel)
+                .input(null, null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                    }
+                })
+                .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        String input = dialog.getInputEditText().getText().toString();
+                        if(!input.isEmpty() && input != null) {
+                            float change = Float.parseFloat(input);
+                            for (ExerciseSet s : mExercise.getSets()) {
+                                s.setWeight(s.getWeight() + change);
+                            }
+                            mRoutine.putExercise(mExercise);
+                            mRoutineDb.update(mRoutine);
+                            updateActivity();
+                            fabMenu.close(true);
+                        }
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .build();
+        dialog.show();
+    }
 
     // update adapter
     @Override
@@ -142,13 +202,8 @@ public class SetsActivity extends AnimationBaseActivity {
         super.onResume();
     }
 
-    private void insertOnAdapter(int pos) {
-        updateVariables();
-        mSetsAdapter.notifyItemInserted(pos);
-    }
-
     // update activity variables and adapter if constructed
-    private void updateVariables() {
+    private void updateActivity() {
         mRoutine = mRoutineDb.get(mRoutineName);
         mExercise = mRoutine.getExercise(mExerciseName);
         mSets = mExercise.getSets();

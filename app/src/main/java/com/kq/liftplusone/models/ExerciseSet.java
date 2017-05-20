@@ -2,13 +2,17 @@ package com.kq.liftplusone.models;
 
 import com.kq.liftplusone.helpers.MeasurementHelper;
 
+import java.util.UUID;
+
 public class ExerciseSet {
+    private String id;
     private int mReps;
     private float mWeight;
 
     public ExerciseSet(int reps, float weight) {
         mReps = reps;
         mWeight = weight;
+        id = UUID.randomUUID().toString();
     }
 
     public int getReps() {
@@ -33,9 +37,13 @@ public class ExerciseSet {
         StringBuilder sb = new StringBuilder();
 
         double weight = getWeight() * ratio;
-        sb.append(getReps() + " reps @ " + String.format("%.1f", weight) + measurementString);
+        sb.append(getReps() + " reps | " + String.format("%.1f", weight) + measurementString);
 
         return sb.toString();
+    }
+
+    public String getId() {
+        return id;
     }
 
 }

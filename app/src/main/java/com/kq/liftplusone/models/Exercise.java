@@ -3,7 +3,11 @@ package com.kq.liftplusone.models;
 import com.google.gson.Gson;
 import com.kq.liftplusone.helpers.MeasurementHelper;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by Kevin on 5/14/2017.
@@ -11,26 +15,22 @@ import java.util.ArrayList;
 
 public class Exercise {
 
-    private Equipment mEquipment;
     private String mExerciseName;
-    private ArrayList<ExerciseSet> mSets;
+    private Map<String, ExerciseSet> mSets;
 
-    public Exercise(String exerciseName, Equipment equipment, ArrayList<ExerciseSet> sets) {
+    public Exercise(String exerciseName, LinkedHashMap<String, ExerciseSet> sets) {
         mExerciseName = exerciseName;
         mSets = sets;
-        mEquipment = equipment;
     }
 
     public String setsAsString(Measurement m) {
         String measurementString = MeasurementHelper.getString(m);
         StringBuilder sb = new StringBuilder();
-        for (Object s : mSets) {
-            if (s instanceof ExerciseSet) {
-                ExerciseSet es = (ExerciseSet) s;
-                sb.append(es.getWeight() + measurementString);
-                if (mSets.indexOf(es) != mSets.size() - 1) { // delimit with commas except for last one
-                    sb.append(" | ");
-                }
+        ArrayList<ExerciseSet> sets = new ArrayList(mSets.values());
+        for (ExerciseSet s : sets) {
+            sb.append(s.getWeight() + measurementString);
+            if (sets.indexOf(s) != mSets.size() - 1) { // delimit with commas except for last one
+                sb.append(" | ");
             }
         }
         return sb.toString();
@@ -40,12 +40,10 @@ public class Exercise {
         return mExerciseName;
     }
 
-    public ArrayList<ExerciseSet> getSets() {return mSets;}
+    public ArrayList<ExerciseSet> getSets() {return new ArrayList<>(mSets.values());}
 
-    public void addSet(ExerciseSet es) {
-        ArrayList<ExerciseSet> sets = (ArrayList<ExerciseSet>) mSets;
-        sets.add((ExerciseSet) es);
-        mSets = sets;
+    public void putSet(ExerciseSet es) {
+        mSets.put(es.getId(), es);
     }
 
     public void removeSet(ExerciseSet es) {

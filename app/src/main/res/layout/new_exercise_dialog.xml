@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/routine_name_header"
+        android:text="@string/exercise_name_header"
         android:textColor="#80000000"
         android:textSize="14sp" />
 
@@ -20,20 +20,6 @@
         android:inputType="textCapWords"
         android:textColor="#000000"
         android:textSize="18sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="@string/equipment_header"
-        android:textColor="#80000000"
-        android:textSize="14sp" />
-
-    <Spinner
-        android:id="@+id/equipment_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -59,5 +45,4 @@
         android:backgroundTint="@color/colorPrimary"
         android:text="Add Set"
         android:textColor="#FFFFFF" />
-
 </LinearLayout>

@@ -25,25 +25,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         bindPreferenceSummaryToValue(findPreference(PREF_MEASUREMENT_KEY));
 
-        findPreference(PREF_RESET_DATA_KEY).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-//                AlertDialog dialog = new AlertDialog.Builder(getBaseContext())
-//                        .setPositiveButton("Reset", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                RoutineDatabase mDbHelper = new RoutineDatabase(getBaseContext(), DATABASE_NAME);
-//                                mDbHelper.resetDatabase();
-//                            }
-//                        })
-//                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.cancel();
-//                            }
-//                        }).show();
-
-//                new MaterialDialog.Builder(this)
+//        findPreference(PREF_RESET_DATA_KEY).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//            @Override
+//            public boolean onPreferenceClick(Preference preference) {
+//                RoutineDatabase mDbHelper = new RoutineDatabase(getBaseContext(), DATABASE_NAME);
+//                return true;
+//                new MaterialDialog.Builder(getBaseContext())
 //                        .title(R.string.reset_data_title)
 //                        .positiveText("Reset")
 //                        .negativeText(android.R.string.cancel)
@@ -61,9 +48,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 //                            }
 //                        })
 //                        .show();
-                return true;
-            }
-        });
+//                return true;
+//            }
+//        });
     }
 
     private Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {

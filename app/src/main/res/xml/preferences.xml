@@ -9,10 +9,10 @@
         android:title="@string/pref_measurement_title"
         android:summary="lb" />
 
-    <Preference
-        android:key="@string/pref_reset_data_key"
-        android:negativeButtonText="Cancel"
-        android:positiveButtonText="Reset"
-        android:title="Reset Data" />
+    <!--<Preference-->
+        <!--android:key="@string/pref_reset_data_key"-->
+        <!--android:negativeButtonText="Cancel"-->
+        <!--android:positiveButtonText="Reset"-->
+        <!--android:title="Reset Data" />-->
 
 </PreferenceScreen>

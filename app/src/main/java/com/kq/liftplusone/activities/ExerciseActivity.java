@@ -8,13 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -23,19 +19,19 @@ import com.kq.liftplusone.R;
 import com.kq.liftplusone.adapters.ExerciseAdapter;
 import com.kq.liftplusone.adapters.ExerciseDialogSetsAdapter;
 import com.kq.liftplusone.database.RoutineDatabase;
-import com.kq.liftplusone.helpers.EquipmentHelper;
-import com.kq.liftplusone.models.Equipment;
 import com.kq.liftplusone.models.Exercise;
+import com.kq.liftplusone.models.ExerciseSet;
 import com.kq.liftplusone.models.Routine;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.kq.liftplusone.helpers.Constants.DATABASE_NAME;
-import static com.kq.liftplusone.helpers.Constants.EXERCISE_ACTIVITY_LOG_TAG;
 
 public class ExerciseActivity extends AnimationBaseActivity {
     // bind views
@@ -68,7 +64,7 @@ public class ExerciseActivity extends AnimationBaseActivity {
         // get Intent data passed from Routine activity
         Intent intent = getIntent();
         mRoutineName = intent.getStringExtra("Routine");
-        updateVariables();
+        updateActivity();
 
         // set title to Routine name
         getSupportActionBar().setTitle(mRoutineName);
@@ -84,13 +80,12 @@ public class ExerciseActivity extends AnimationBaseActivity {
     // update adapter
     @Override
     protected void onResume() {
-        updateVariables();
+        updateActivity();
         updateMessage();
         mExerciseAdapter.notifyDataSetChanged();
         super.onResume();
     }
 
-    Equipment equipment = Equipment.Barbell;
     @OnClick(R.id.fab)
     public void addExercise(View view) {
         final ExerciseDialogSetsAdapter setsAdapter = new ExerciseDialogSetsAdapter(this);
@@ -100,15 +95,16 @@ public class ExerciseActivity extends AnimationBaseActivity {
             .title(R.string.enter_exercise)
             .positiveText(android.R.string.ok)
             .negativeText(android.R.string.cancel)
-            .customView(R.layout.exercise_dialog, true)
+            .customView(R.layout.new_exercise_dialog, true)
             .onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    updateActivity(); // update stale data
                     String input = ((EditText) dialog.findViewById(R.id.routine_name)).getText().toString();
-                    Exercise exercise = new Exercise(input, equipment, setsAdapter.getSets());
+                    Exercise exercise = new Exercise(input, mapIdsToExerciseSets(setsAdapter.getSets()));
                     mRoutine.putExercise(exercise);
                     mRoutineDb.update(mRoutine);
-                    insertOnAdapter(mExerciseAdapter.getItemCount());
+                    updateActivity();
                     updateMessage();
                 }
             })
@@ -139,26 +135,8 @@ public class ExerciseActivity extends AnimationBaseActivity {
             }
         });
 
-        final Spinner equipmentSpinner = (Spinner) dialog.findViewById(R.id.equipment_spinner);
         final RecyclerView setRecyclerView = (RecyclerView) dialog.findViewById(R.id.exercise_dialog_set_recycler_view);
         final Button addSetButton = (Button) dialog.findViewById(R.id.add_button);
-
-        ArrayAdapter<CharSequence> equipmentAdapter = ArrayAdapter.createFromResource(this,
-                    R.array.equipment_array, android.R.layout.simple_spinner_item);
-        equipmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        equipmentSpinner.setAdapter(equipmentAdapter);
-        equipmentSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            public void onItemSelected(AdapterView<?> arg0, View v, int position, long id)
-            {
-                equipment = EquipmentHelper.StringToEquipment(equipmentSpinner.getItemAtPosition(position).toString());
-            }
-
-            public void onNothingSelected(AdapterView<?> arg0)
-            {
-                Log.d(EXERCISE_ACTIVITY_LOG_TAG, "nothing selected");
-            }
-        });
 
         // attach adapter to Sets collection
         setRecyclerView.setAdapter(setsAdapter);
@@ -174,13 +152,8 @@ public class ExerciseActivity extends AnimationBaseActivity {
         dialog.show();
     }
 
-    private void insertOnAdapter(int pos) {
-        updateVariables();
-        mExerciseAdapter.notifyItemInserted(pos);
-    }
-
     // update activity variables and adapter if constructed
-    private void updateVariables() {
+    private void updateActivity() {
         mRoutine = mRoutineDb.get(mRoutineName);
         mExercises = mRoutine.getExercises();
         if(mExerciseAdapter != null)
@@ -196,4 +169,11 @@ public class ExerciseActivity extends AnimationBaseActivity {
             noExerciseMsg.setVisibility(View.INVISIBLE);
     }
 
+    private LinkedHashMap<String, ExerciseSet> mapIdsToExerciseSets(ArrayList<ExerciseSet> sets) {
+        LinkedHashMap<String, ExerciseSet> returnMap = new LinkedHashMap<>();
+        for(ExerciseSet es : sets) {
+            returnMap.put(es.getId(), es);
+        }
+        return returnMap;
+    }
 }

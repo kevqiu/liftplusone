@@ -62,7 +62,7 @@ public class RoutineActivity extends AnimationBaseActivity {
     // update adapter
     @Override
     protected void onResume() {
-        updateVariables();
+        updateActivity();
         updateMessage();
         mRoutineAdapter.notifyDataSetChanged();
         super.onResume();
@@ -87,7 +87,7 @@ public class RoutineActivity extends AnimationBaseActivity {
                     if(!input.isEmpty() && input != null) {
                         Routine routine = new Routine(input);
                         mRoutineDb.add(routine);
-                        insertOnAdapter(mRoutineAdapter.getItemCount());
+                        updateActivity();
                         updateMessage();
                     }
                 }
@@ -101,13 +101,8 @@ public class RoutineActivity extends AnimationBaseActivity {
             .show();
     }
 
-    private void insertOnAdapter(int pos) {
-        updateVariables();
-        mRoutineAdapter.notifyItemInserted(pos);
-    }
-
     // update activity variables and adapter if constructed
-    private void updateVariables() {
+    private void updateActivity() {
         mRoutines = mRoutineDb.getAll();
         if(mRoutineAdapter != null)
             mRoutineAdapter.updateData(mRoutines);

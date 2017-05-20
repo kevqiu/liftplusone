@@ -52,6 +52,8 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
         return new ViewHolder(routineView);
     }
 
+    int weightPrevLength;
+    int repsPrevLength;
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
@@ -68,7 +70,7 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
         });
         weightInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { weightPrevLength = s.length(); }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -80,11 +82,18 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                if(weightPrevLength > s.length()) {
+                    ExerciseSet set = mSets.get(position);
+                    set.setWeight(Float.parseFloat(s.toString()));
+                    mSets.set(position, set);
+                }
+            }
         });
+
         repsInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { repsPrevLength = s.length(); }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -96,7 +105,12 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                if(repsPrevLength > s.length()) {
+                    ExerciseSet set = mSets.get(position);
+                    set.setReps(Integer.parseInt(s.toString()));
+                    mSets.set(position, set);
+            }}
         });
     }
 
@@ -114,4 +128,5 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
     public ArrayList<ExerciseSet> getSets() {
         return mSets;
     }
+
 }

@@ -75,7 +75,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
                         mRoutine.removeExercise(ex);
                         mDbHelper.update(mRoutine);
                         updateData(mDbHelper.get(mRoutine.getRoutineName()));
-                        notifyDataSetChanged();
                     }
                 })
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
@@ -133,6 +132,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
     public void updateData(Routine routine){
         mRoutine = routine;
         mExercises = mRoutine.getExercises();
+        notifyDataSetChanged();
     }
-
 }

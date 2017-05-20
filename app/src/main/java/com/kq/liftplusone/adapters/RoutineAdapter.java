@@ -50,11 +50,6 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
 
             Intent intent = new Intent(mContext, ExerciseActivity.class);
             intent.putExtra("Routine", routine.getRoutineName());
-//            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                    (Activity) mContext,
-//                    ((Activity) mContext).findViewById(R.id.fab),
-//                    v.getResources().getString(R.string.fab_transition));
-//            mContext.startActivity(intent, options.toBundle());
             mContext.startActivity(intent);
         }
 
@@ -126,5 +121,6 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
 
     public void updateData(ArrayList<Routine> list){
         mRoutines = list;
+        notifyDataSetChanged();
     }
 }

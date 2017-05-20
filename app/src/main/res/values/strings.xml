@@ -14,35 +14,13 @@
     <string name="no_exercises">Add an exercise!</string>
 
     <!--Routine Dialog Strings-->
-    <string name="routine_name_header">Routine Name</string>
-    <string name="equipment_header">Equipment</string>
-    <!--<string name="main_muscle_group_header">Main Muscle Group</string>-->
-    <!--<string name="secondary_muscle_group_header">Secondary Muscle Group</string>-->
+    <string name="exercise_name_header">Exercise Name</string>
     <string name="set_header">Sets</string>
-
-    <string-array name="equipment_array">
-        <item>Barbell</item>
-        <item>Free Weights</item>
-        <item>Machine</item>
-        <item>Body Weight</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="muscle_group_array">
-        <item>Chests</item>
-        <item>Shoulders</item>
-        <item>Biceps</item>
-        <item>Triceps</item>
-        <item>Back</item>
-        <item>Quads</item>
-        <item>Hamstrings</item>
-        <item>Calves</item>
-        <item>Abs</item>
-    </string-array>
 
     <!--Set Activity Strings-->
     <string name="title_activity_set">SetActivity</string>
-    <string name="enter_set">New Set</string>
+    <string name="new_set">New Set</string>
+    <string name="change_weights">Change Weights</string>
     <string name="delete_set">Would you like to remove this set?</string>
 
     <!--Activity Transition Strings-->
