@@ -74,7 +74,7 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count > 0 && s.charAt(s.length()-1) != '.') {
+                if (count > 0 && s.charAt(s.length()-1) != '.') {
                     ExerciseSet set = mSets.get(position);
                     set.setWeight(Float.parseFloat(s.toString()));
                     mSets.set(position, set);
@@ -83,9 +83,9 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(weightPrevLength > s.length()) {
+                if (weightPrevLength > s.length()) {
                     ExerciseSet set = mSets.get(position);
-                    set.setWeight(Float.parseFloat(s.toString()));
+                    set.setWeight(s.length() > 0 ? Float.parseFloat(s.toString()) : 0);
                     mSets.set(position, set);
                 }
             }
@@ -106,9 +106,9 @@ public class ExerciseDialogSetsAdapter extends RecyclerView.Adapter<ExerciseDial
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(repsPrevLength > s.length()) {
+                if(repsPrevLength > s.length() && s.length() > 0) {
                     ExerciseSet set = mSets.get(position);
-                    set.setReps(Integer.parseInt(s.toString()));
+                    set.setReps(s.length() > 0 ? Integer.parseInt(s.toString()) : 0);
                     mSets.set(position, set);
             }}
         });

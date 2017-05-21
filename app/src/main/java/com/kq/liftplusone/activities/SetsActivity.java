@@ -10,7 +10,9 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -49,6 +51,8 @@ public class SetsActivity extends AnimationBaseActivity {
     private Exercise mExercise;
     private ArrayList<ExerciseSet> mSets;
 
+    boolean addWeight = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,19 +83,10 @@ public class SetsActivity extends AnimationBaseActivity {
         // get RecyclerView and attach adapter
         mRecyclerView.setAdapter(mSetsAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-//        fabMenu.setOnFloatingActionsMenuUpdateListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(v.getContext(), "menu", Toast.LENGTH_SHORT).show();
-//                fabMenu.toggle();
-//            }
-//        });
     }
 
     @OnClick(R.id.fabMenu)
-    public void asd(View view) {
-        Toast.makeText(this, "toggle menu", Toast.LENGTH_SHORT).show();
+    public void toggleMenu(View view) {
         fabMenu.toggle(true);
     }
 
@@ -106,6 +101,16 @@ public class SetsActivity extends AnimationBaseActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        String weightInput = ((EditText) dialog.getCustomView().findViewById(R.id.weight_edit_text)).getText().toString();
+                        String repsInput = ((EditText) dialog.getCustomView().findViewById(R.id.reps_edit_text)).getText().toString();
+                        if(!weightInput.isEmpty() && weightInput != null) {
+                            float newWeight = Float.parseFloat(weightInput);
+                            set.setWeight(newWeight);
+                        }
+                        if(!repsInput.isEmpty() && repsInput != null) {
+                            int newReps = Integer.parseInt(repsInput);
+                            set.setReps(newReps);
+                        }
                         updateActivity(); // update stale data
                         mExercise.putSet(set);
                         mRoutine.putExercise(mExercise);
@@ -124,58 +129,24 @@ public class SetsActivity extends AnimationBaseActivity {
 
         // hide remove button
         dialog.getCustomView().findViewById(R.id.remove_button).setVisibility(View.INVISIBLE);
-
-        // attach text change listeners to inputs
-        EditText weightInput = (EditText) dialog.getCustomView().findViewById(R.id.weight_edit_text);
-        EditText repsInput = (EditText) dialog.getCustomView().findViewById(R.id.reps_edit_text);
-        weightInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count > 0 && s.charAt(s.length()-1) != '.') {
-                    set.setWeight(Float.parseFloat(s.toString()));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-        repsInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count > 0) {
-                    set.setReps(Integer.parseInt(s.toString()));
-                }
-            }
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
         dialog.show();
     }
 
     @OnClick(R.id.fabChangeWeight)
     public void changeWeight(View view) {
+        addWeight = true; // reset flag on new dialog
         MaterialDialog dialog = new MaterialDialog.Builder(view.getContext())
                 .title(R.string.change_weights)
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.cancel)
-                .input(null, null, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                    }
-                })
-                .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_NUMBER_FLAG_DECIMAL)
+                .customView(R.layout.change_weights_dialog, true)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        String input = dialog.getInputEditText().getText().toString();
+                        String input = ((EditText) dialog.findViewById(R.id.input)).getText().toString();
                         if(!input.isEmpty() && input != null) {
                             float change = Float.parseFloat(input);
+                            change = addWeight ? change : -change;
                             for (ExerciseSet s : mExercise.getSets()) {
                                 s.setWeight(s.getWeight() + change);
                             }
@@ -193,6 +164,22 @@ public class SetsActivity extends AnimationBaseActivity {
                     }
                 })
                 .build();
+
+        final ImageButton incDecButton = (ImageButton) dialog.findViewById(R.id.inc_dec_button);
+        incDecButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(addWeight) {
+                    incDecButton.setBackgroundResource(R.drawable.ic_remove_circle_outline_black_24dp);
+                    addWeight = false;
+                }
+                else {
+                    incDecButton.setBackgroundResource(R.drawable.ic_add_circle_outline_black_24dp);
+                    addWeight = true;
+                }
+            }
+        });
+
         dialog.show();
     }
 

@@ -72,19 +72,15 @@ public class SetsAdapter extends RecyclerView.Adapter<SetsAdapter.ViewHolder>  {
                             if(!weightInput.isEmpty() && weightInput != null) {
                                 float newWeight = Float.parseFloat(weightInput);
                                 set.setWeight(newWeight);
-                                mExercise.putSet(set);
-                                mRoutine.putExercise(mExercise);
-                                mDbHelper.update(mRoutine);
-                                updateData(mExercise);
                             }
                             if(!repsInput.isEmpty() && repsInput != null) {
                                 int newReps = Integer.parseInt(repsInput);
                                 set.setReps(newReps);
-                                mExercise.putSet(set);
-                                mRoutine.putExercise(mExercise);
-                                mDbHelper.update(mRoutine);
-                                updateData(mExercise);
                             }
+                            mExercise.putSet(set);
+                            mRoutine.putExercise(mExercise);
+                            mDbHelper.update(mRoutine);
+                            updateData(mExercise);
                         }
                     })
                     .onNegative(new MaterialDialog.SingleButtonCallback() {
